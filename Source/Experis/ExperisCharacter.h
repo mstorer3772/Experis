@@ -16,6 +16,10 @@ struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnExperisDeath);
+
+
 UCLASS(config=Game)
 class AExperisCharacter : public ACharacter
 {
@@ -45,21 +49,21 @@ class AExperisCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
-
-
 	/** Character Health */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Health, meta = (AllowPrivateAccess = "true"))
-	float CurrentHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Health, meta = (AllowPrivateAccess = "true"))
+	float CurrentHealth = 20;
 
-	UPROPERTY(EditDefaultsOnly
-		, BlueprintReadOnly, Category = Health, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Health, meta = (AllowPrivateAccess = "true"))
 	float MaxHealth = 20;
 
+	UPROPERTY(BlueprintAssignable, Category = Health)
+	FOnExperisDeath OnExperisDeath;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnExperisDeath);
 public:
 	AExperisCharacter();
-	
+
+	UFUNCTION(BlueprintCallable, Category = Health)
+	void SetHealth(float NewValue);
 
 protected:
 
@@ -68,14 +72,17 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
-			
 
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
+
 	// To add mapping context
 	virtual void BeginPlay();
+
+	// Called when at zero health
+	// launches FOnExperisDeath delegate (TODO: play relevant animation, audio, etc)
+	virtual void Die();
 
 public:
 	/** Returns CameraBoom subobject **/

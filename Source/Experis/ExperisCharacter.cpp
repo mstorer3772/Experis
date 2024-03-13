@@ -69,6 +69,39 @@ void AExperisCharacter::BeginPlay()
 	}
 }
 
+void AExperisCharacter::SetHealth(float health)
+{
+	float oldHealth = CurrentHealth;
+	float newHealth = FMath::Clamp(health, 0.0f, MaxHealth);
+	if (oldHealth != newHealth) {
+		UE_LOG(LogTemplateCharacter, Log, TEXT("Health changed from %f to %f"), oldHealth, newHealth);
+
+		CurrentHealth = newHealth;
+
+		// Even though we just clamped, that only handles the negative side
+		if (CurrentHealth <= 0.00001f) 
+		{
+			Die();
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemplateCharacter, Log, TEXT("Health unchanged at %f"), newHealth);
+	}
+}
+
+void AExperisCharacter::Die()
+{
+	if (OnExperisDeath.IsBound())
+	{
+		OnExperisDeath.Broadcast();
+	}
+	else
+	{
+		UE_LOG(LogTemplateCharacter, Warning, TEXT("No OnExperisDeath delegate bound!"));
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
