@@ -50,11 +50,11 @@ class AExperisCharacter : public ACharacter
 	UInputAction* LookAction;
 
 	/** Character Health */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Health, meta = (AllowPrivateAccess = "true"))
-	float CurrentHealth = 20;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Health, meta = (AllowPrivateAccess = "true"))
 	float MaxHealth = 20;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Health, meta = (AllowPrivateAccess = "true"))
+	float CurrentHealth = MaxHealth;
 
 	UPROPERTY(BlueprintAssignable, Category = Health)
 	FOnExperisDeath OnExperisDeath;
